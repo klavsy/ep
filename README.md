@@ -2,7 +2,7 @@
 
 Vienkārši atver termināli un palaid šo komandu: 
 
-**curl -fsSL https://klavsy.github.io/ep/install.sh | bash**
+curl -fsSL https://klavsy.github.io/ep/install.sh | bash
 
 ## ⚠️ Disclaimer / Atruna
 
