@@ -20,4 +20,4 @@ All rights regarding the software belong to / Visas tiesības uz programmatūru 
 **Valsts akciju sabiedrība “Latvijas Valsts radio un televīzijas centrs” (LVRTC)**
 * **Reg. Nr:** 40003011203
 * **Address / Adrese:** Zemitāna iela 9 k-3, Rīga, Latvija, LV-1012
-* **Website / Vietne:** [www.eparaksts.lv](https://www.eparaksts.lv)
+* **Website / Vietne:** www.eparaksts.lv
