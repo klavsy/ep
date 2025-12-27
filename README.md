@@ -1,5 +1,11 @@
+## Kā lietot šo skriptu? ##
+
+Vienkārši atver termināli un palaid šo komandu: 
+
+**curl -fsSL https://klavsy.github.io/ep/install.sh | bash**
 
 ## ⚠️ Disclaimer / Atruna
+
 
 **EN:**
 This is an **unofficial** installation script. I am not affiliated with, endorsed by, or connected to the developers of this software. This repository simply provides a script to automate the installation process on Linux systems.
