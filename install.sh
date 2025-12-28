@@ -84,4 +84,4 @@ fi
 echo "📦 Instalē eParaksts..."
 sudo apt install -y eparakstitajs3 awp latvia-eid-middleware eparaksts-token-signing
 
-echo "✅ DARĪTS! Pārstartē pārlūku un pievieno paplašinājumu (Chrome/Edge/Firefox)."
+echo "✅ DARĪTS! Neaizmirsti pievienot paplašinājumu (Chrome/Edge/Firefox). Vari aizvērt šo logu!"
