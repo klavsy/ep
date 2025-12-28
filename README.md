@@ -18,7 +18,7 @@
 | 🧠 **Gudrā OS noteikšana** | Automātiski nosaka jūsu Linux versiju un piemeklē pareizo konfigurāciju. |
 | 🛠️ **Darbojas uz LMDE & Debian** | Nodrošina darbību uz **LMDE 6/7** un **Debian 12**, automātiski pieslēdzot saderīgos Ubuntu repozitorijus. |
 | 🔒 **Moderna drošība** | Izmanto korekto `/usr/share/keyrings` metodi (aizstājot novecojušo `apt-key`). |
-| 📦 **Pilnvērtīga pakotne** | Vienā piegājienā uzstāda programmu, eID starpprogrammatūru un pārlūka spraudņus. |
+| 📦 **Pilnvērtīga pakotne** | Vienā piegājienā uzstāda programmu, eID starpprogrammatūru. |
 
 ---
 
