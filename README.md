@@ -15,10 +15,12 @@
 
 | Funkcija | Apraksts |
 | :--- | :--- |
-| 🧠 **Gudrā OS noteikšana** | Automātiski nosaka jūsu Linux versiju un piemeklē pareizo konfigurāciju. |
-| 🛠️ **Darbojas uz LMDE & Debian** | Nodrošina darbību uz **LMDE 6/7** un **Debian 12**, automātiski pieslēdzot saderīgos Ubuntu repozitorijus. |
-| 🔒 **Moderna drošība** | Izmanto korekto `/usr/share/keyrings` metodi (aizstājot novecojušo `apt-key`). |
-| 📦 **Pilnvērtīga pakotne** | Vienā piegājienā uzstāda programmu, eID starpprogrammatūru. |
+
+* **🕵️‍♂️ Automātiska OS noteikšana:** Skripts pats atpazīst sistēmu (LMDE, Kali, Debian Trixie u.c.) un pieslēdz atbilstošāko Ubuntu repozitoriju.
+* **🛡️ Drošība un moderni standarti:** Izmanto mūsdienīgu `signed-by` atslēgu pārvaldību (nevis novecojušo un nedrošo `apt-key`), garantējot, ka visi faili tiek verificēti pret oficiālajiem LVRTC serveriem.
+* **🛠️ Debian 12 / LMDE 6 Labojums:** Automātiski izveido un uzinstalē "fiktīvu" (dummy) pakotni priekš `nautilus-sendto`, lai novērstu "unmet dependencies" kļūdu, kas bieži sastopama jaunākajās Debian versijās.
+* **🧹 Tīra instalācija:** Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakas.
+* **📦 Pilna komplektācija:** Uzstāda gan darbvirsmas lietotni, gan eID starpprogrammatūru (middleware), gan pārlūkprogrammu parakstīšanas moduli.
 
 ---
 
