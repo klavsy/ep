@@ -1,14 +1,18 @@
 #!/bin/bash
 set -e
 
-# --- 0. SAGATAVOŠANĀS ---
-# Pārliecināmies, ka sistēmai ir rīki failu lejupielādei un atslēgu apstrādei.
-echo "🛠️  Pārbauda nepieciešamos rīkus..."
-sudo apt update -qq
-# Pievienojam 'binutils', lai vēlāk varētu uzbūvēt viltus pakotni, ja vajadzēs.
-sudo apt install -y wget gpg ca-certificates binutils
+# --- 0. SAKOPŠANA (KRITISKS LABOJUMS) ---
+echo "🧹 Sakopj sistēmu pirms instalācijas..."
+# Noņemam eparakstu, ja tas ir palicis 'pus-uzinstalēts' un bloķē sistēmu
+sudo dpkg --remove --force-all eparakstitajs3 2>/dev/null || true
+sudo apt --fix-broken install -y
 
-# --- 1. INTELIĢENTĀ OS NOTEIKŠANA ---
+# --- 1. SAGATAVOŠANĀS ---
+echo "🛠️  Pārbauda rīkus..."
+sudo apt update -qq
+sudo apt install -y wget gpg ca-certificates coreutils
+
+# --- 2. INTELIĢENTĀ OS NOTEIKŠANA ---
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 fi
@@ -16,78 +20,68 @@ fi
 echo "🚀 Uzsāk eParaksts uzstādīšanu..."
 echo "ℹ️  Noteiktā sistēma: $NAME ($VERSION_CODENAME)"
 
-# LMDE 6 (faye), Debian 12 (bookworm), Debian 13 (trixie), Kali, u.c.
 if [ "$VERSION_CODENAME" = "faye" ] || [ "$VERSION_CODENAME" = "bookworm" ] || [ "$VERSION_CODENAME" = "trixie" ] || [ "$ID" = "kali" ]; then
     echo "⚠️  Konstatēts Debian/LMDE. Pārslēdzas uz 'noble' (Ubuntu 24.04) saderības režīmu..."
     TARGET_CODENAME="noble"
 elif [ -n "$UBUNTU_CODENAME" ]; then
     TARGET_CODENAME="$UBUNTU_CODENAME"
 else
-    echo "⚠️  Nevarēja noteikt Ubuntu versiju. Pārslēdzas uz 'noble'..."
     TARGET_CODENAME="noble"
 fi
 
-echo "ℹ️  Mērķa repozitorijs: $TARGET_CODENAME"
-
-# --- 2. NOTĪRA VECĀS VERSIJAS ---
+# --- 3. REPOZITORIJA IESTATĪŠANA ---
 if [ -f /etc/apt/sources.list.d/eparaksts.list ]; then
-    echo "🧹 Dzēš veco repozitorija konfigurāciju..."
     sudo rm /etc/apt/sources.list.d/eparaksts.list
 fi
 
-# --- 3. LEJUPIELĀDES ATSLĒGA ---
-echo "🔑 Notiek drošības atslēgas lejupielāde..."
-wget -q --show-progress -O- https://www.eparaksts.lv/files/ep3updates/debian/public.key | \
+echo "🔑 Iegūst atslēgas..."
+wget -q -O- https://www.eparaksts.lv/files/ep3updates/debian/public.key | \
   gpg --dearmor | \
   sudo tee /usr/share/keyrings/eparaksts-keyring.gpg > /dev/null
 
-# --- 4. PIEVIENO REPOZITORIJU ---
 echo "📂 Pievieno repozitoriju ($TARGET_CODENAME)..."
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/eparaksts-keyring.gpg] https://www.eparaksts.lv/files/ep3updates/debian $TARGET_CODENAME eparaksts" | \
   sudo tee /etc/apt/sources.list.d/eparaksts.list > /dev/null
 
-echo "📦 Atjaunina sarakstus..."
 sudo apt update
 
-# --- 5. "NAUTILUS-SENDTO" LABOJUMS (Fix for LMDE 6 / Debian 12) ---
-# Pārbauda, vai repozitorijos eksistē 'nautilus-sendto'. Ja nē, uztaisa viltus paku.
-if ! apt-cache show nautilus-sendto > /dev/null 2>&1; then
-    echo "🔧 Pamanīta LMDE/Debian problēma: trūkst 'nautilus-sendto'."
-    echo "🔨 Ģenerē saderības (dummy) paku..."
+# --- 4. "NAUTILUS-SENDTO" BRUTE FORCE FIX ---
+# Mēs vairs nejautājam "vai vajag?". Mēs pārbaudām, vai ir, un ja nav - uzliekam.
+if ! dpkg -s nautilus-sendto >/dev/null 2>&1; then
+    echo "🔧 Fiksē 'nautilus-sendto' trūkumu (LMDE/Debian fix)..."
     
-    # Izveido pagaidu mapi
-    mkdir -p ns-dummy/DEBIAN
+    # Izveidojam darba mapi
+    TEMP_DIR=$(mktemp -d)
+    mkdir -p "$TEMP_DIR/DEBIAN"
     
-    # Izveido kontroles failu
-    cat <<EOF > ns-dummy/DEBIAN/control
+    # Ģenerējam kontroles failu
+    cat <<EOF > "$TEMP_DIR/DEBIAN/control"
 Package: nautilus-sendto
 Version: 99.0
 Section: misc
 Priority: optional
 Architecture: all
 Maintainer: eParaksts Script <script@localhost>
-Description: Fake package for eParaksts compatibility
- This package satisfies the outdated dependency required by eParaksts on newer Debian systems.
+Description: Fake package to satisfy eParakstitajs dependency
+ This is a dummy package because Debian 12 removed nautilus-sendto.
 EOF
 
-    # Uzbūvē .deb failu
-    dpkg-deb --build ns-dummy
+    # Uzbūvējam .deb failu
+    dpkg-deb --build "$TEMP_DIR" "nautilus-sendto-dummy.deb"
     
-    # Uzinstalē to
-    echo "📥 Instalē saderības paku..."
-    sudo dpkg -i ns-dummy.deb
+    # Instalējam to ar dpkg (apejot apt repozitorijus)
+    echo "📥 Instalē dummy paku..."
+    sudo dpkg -i nautilus-sendto-dummy.deb
     
-    # Sakopj pēdas
-    rm -rf ns-dummy ns-dummy.deb
-    echo "✅ Saderības problēma novērsta."
+    # Tīrām
+    rm -rf "$TEMP_DIR" nautilus-sendto-dummy.deb
+    echo "✅ Atkarība sakārtota."
 else
-    echo "✅ 'nautilus-sendto' ir pieejams, labojums nav nepieciešams."
+    echo "✅ 'nautilus-sendto' jau ir sistēmā."
 fi
 
-# --- 6. INSTALĒŠANA ---
-echo "💿 Uzstāda eParaksts programmatūru..."
-# -y karogs automātiski apstiprina instalāciju
+# --- 5. FINĀLA INSTALĀCIJA ---
+echo "📦 Instalē eParaksts..."
 sudo apt install -y eparakstitajs3 awp latvia-eid-middleware eparaksts-token-signing
 
-echo "✅ Uzstādīšana sekmīgi pabeigta!"
-echo "👉 Neaizmirsti uzinstalēt pārlūka paplašinājumu (Chrome/Edge/Firefox) manuāli!"
+echo "✅ DARĪTS! Pārstartē pārlūku un pievieno paplašinājumu (Chrome/Edge/Firefox)."
