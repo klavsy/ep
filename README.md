@@ -39,7 +39,7 @@ Skripts ir testēts un apstiprināts darbībai uz šādām distribūcijām:
 Vienkārši atver termināli (`Ctrl+Alt+T`) un iekopē šo komandu un nospied ENTER:
 
 ```bash
-curl -fsSL [https://klavsy.github.io/ep/install.sh](https://klavsy.github.io/ep/install.sh) | bash
+curl -fsSL [https://klavsy.github.io/ep/install.sh
 ```
 
 ## 📦 Kas tiek uzstādīts?
