@@ -33,9 +33,9 @@ Skripts ir testēts un apstiprināts darbībai uz šādām distribūcijām:
 
 ---
 
-## 🚀 Kā uzstādīt
+## 🚀 Kā uzstādīt?
 
-### ⚡ 1. variants: Ātrā uzstādīšana (Ieteicams)
+### ⚡ Ātrā uzstādīšana
 Vienkārši atver termināli (`Ctrl+Alt+T`) un iekopē šo komandu un nospied ENTER:
 
 ```bash
