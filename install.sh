@@ -2,52 +2,52 @@
 set -e
 
 # --- 1. INTELIĢENTĀ OS NOTEIKŠANA ---
-# Ubuntu/Mint = noble, jammy, focal
-# LMDE/Debian = bookworm, bullseye
+# Mērķis: Piespiest izmantot "noble" vai "jammy", jo eParaksts neatbalsta Debian nosaukumus.
 
-# Load OS details
 if [ -f /etc/os-release ]; then
     . /etc/os-release
 fi
 
-# Loģika, lai noteiktu pareizo repozitorija nosaukumu.
-if [ -n "$UBUNTU_CODENAME" ]; then
-    # Variants A: Ubuntu, Linux Mint, Pop!_OS
+echo "🚀 Uzsāk eParaksts uzstādīšanu..."
+echo "ℹ️  Noteiktā sistēma: $NAME ($VERSION_CODENAME)"
+
+# Loģika: Ja ir LMDE 7 (faye) vai Debian Bookworm, mēs "melojam" serverim, ka tas ir Ubuntu Noble.
+if [ "$VERSION_CODENAME" = "faye" ] || [ "$VERSION_CODENAME" = "bookworm" ]; then
+    echo "⚠️  Konstatēts LMDE 7 / Debian 12."
+    echo "🔄 Pārslēdzas uz 'noble' (Ubuntu 24.04) saderības režīmu..."
+    TARGET_CODENAME="noble"
+elif [ -n "$UBUNTU_CODENAME" ]; then
     TARGET_CODENAME="$UBUNTU_CODENAME"
-elif [ -n "$DEBIAN_CODENAME" ]; then
-    # Variants B: LMDE 6/7
-    TARGET_CODENAME="$DEBIAN_CODENAME"
-elif [ "$ID" = "debian" ] && [ -n "$VERSION_CODENAME" ]; then
-    # Variants C: Tīrs Debian
-    TARGET_CODENAME="$VERSION_CODENAME"
 else
-    # Variants D: Manuāla atkāpšanās vecākiem priekš LMDE / nezināmām distribūcijām
-    DETECTED=$(lsb_release -cs)
-    case $DETECTED in
-        "faye")  TARGET_CODENAME="bookworm" ;; # LMDE 6
-        "elsie") TARGET_CODENAME="bullseye" ;; # LMDE 5
-        *)       TARGET_CODENAME="$DETECTED" ;; # Default
-    esac
+    # Fallback visiem citiem - mēģinām noble, jo tas ir jaunākais
+    echo "⚠️  Nevarēja noteikt Ubuntu versiju. Pārslēdzas uz 'noble'..."
+    TARGET_CODENAME="noble"
 fi
 
-echo "🚀 Uzsāk eParaksts uzstādīšanu..."
-echo "ℹ️  Noteiktā sistēma: $NAME"
 echo "ℹ️  Mērķa repozitorijs: $TARGET_CODENAME"
 
-# --- 2. LEJUPIELĀDES ATSLĒGA ---
+# --- 2. NOTĪRA VECĀS VERSIJAS (Jau lietotājam bija neveiksmīgs mēģinājums) ---
+if [ -f /etc/apt/sources.list.d/eparaksts.list ]; then
+    echo "🧹 Dzēš veco repozitorija konfigurāciju..."
+    sudo rm /etc/apt/sources.list.d/eparaksts.list
+fi
+
+# --- 3. LEJUPIELĀDES ATSLĒGA ---
 echo "🔑 Notiek drošības atslēgas lejupielāde..."
 wget -qO- https://www.eparaksts.lv/files/ep3updates/debian/public.key | \
   gpg --dearmor | \
   sudo tee /usr/share/keyrings/eparaksts-keyring.gpg > /dev/null
 
-# --- 3. PIEVIENO REPOZITORIJU ---
-echo "📂 Pievieno repozitoriju..."
+# --- 4. PIEVIENO REPOZITORIJU ---
+echo "📂 Pievieno repozitoriju ($TARGET_CODENAME)..."
 echo "deb [arch=amd64 signed-by=/usr/share/keyrings/eparaksts-keyring.gpg] https://www.eparaksts.lv/files/ep3updates/debian $TARGET_CODENAME eparaksts" | \
   sudo tee /etc/apt/sources.list.d/eparaksts.list > /dev/null
 
-# --- 4. INSTALĒŠANA ---
-echo "📦 Uzstāda eParaksts..."
+# --- 5. INSTALĒŠANA ---
+echo "📦 Atjaunina sarakstus un uzstāda eParaksts..."
 sudo apt update
+
+# Mēģinām instalēt. Ja neizdodas atkarību dēļ, skripts apstāsies un parādīs kļūdu.
 sudo apt install -y eparakstitajs3 awp latvia-eid-middleware eparaksts-token-signing
 
 echo "✅ Uzstādīšana sekmīgi pabeigta! Vari aizvērt logu."
