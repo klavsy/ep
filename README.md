@@ -15,7 +15,7 @@
 
 | Funkcija | Apraksts |
 | :--- | :--- |
-| **🕵️‍♂️ Automātiska OS noteikšana** | Skripts pats atpazīst sistēmu (LMDE, Kali, Debian Trixie u.c.) un pieslēdz atbilstošāko Ubuntu repozitoriju. |
+| **🕵️‍♂️ Automātiska OS noteikšana** | Skripts pats atpazīst sistēmu (Ubuntu, Linux Mint, LMDE, Kali, Debian Trixie u.c.) un pieslēdz atbilstošāko Ubuntu repozitoriju. |
 | **🛡️ Drošība un standarti** | Izmanto mūsdienīgu `signed-by` atslēgu pārvaldību (nevis novecojušo un nedrošo `apt-key`), garantējot, ka visi faili tiek verificēti pret oficiālajiem LVRTC serveriem. |
 | **🛠️ Debian 12 / LMDE 6 Labojums** | Automātiski izveido un uzinstalē "fiktīvu" (dummy) pakotni priekš `nautilus-sendto`, lai novērstu "unmet dependencies" kļūdu, kas bieži sastopama jaunākajās Debian versijās. |
 | **🧹 Tīra instalācija** | Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakas, lai nodrošinātu veiksmīgu rezultātu. |
