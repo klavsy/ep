@@ -1,6 +1,13 @@
 #!/bin/bash
 set -e
 
+# --- 0. SAGATAVOŠANĀS ---
+# Pārliecināmies, ka sistēmai ir rīki failu lejupielādei un atslēgu apstrādei.
+echo "🛠️ Pārbauda nepieciešamos rīkus..."
+# -qq (quiet) samazina teksta daudzumu, lai nepiedrazotu ekrānu
+sudo apt update -qq
+sudo apt install -y wget gpg ca-certificates
+
 # --- 1. INTELIĢENTĀ OS NOTEIKŠANA ---
 # Mērķis: Piespiest izmantot "noble" vai "jammy", jo eParaksts neatbalsta Debian nosaukumus.
 
@@ -12,8 +19,8 @@ echo "🚀 Uzsāk eParaksts uzstādīšanu..."
 echo "ℹ️  Noteiktā sistēma: $NAME ($VERSION_CODENAME)"
 
 # Loģika: Ja ir LMDE 7 (faye) vai Debian Bookworm, mēs "melojam" serverim, ka tas ir Ubuntu Noble.
-if [ "$VERSION_CODENAME" = "faye" ] || [ "$VERSION_CODENAME" = "bookworm" ]; then
-    echo "⚠️  Konstatēts LMDE 7 / Debian 12."
+if [ "$VERSION_CODENAME" = "faye" ] || [ "$VERSION_CODENAME" = "bookworm" ] || [ "$VERSION_CODENAME" = "trixie" ]; then
+    echo "⚠️  Konstatēts LMDE 7 / Debian 12+."
     echo "🔄 Pārslēdzas uz 'noble' (Ubuntu 24.04) saderības režīmu..."
     TARGET_CODENAME="noble"
 elif [ -n "$UBUNTU_CODENAME" ]; then
@@ -26,7 +33,7 @@ fi
 
 echo "ℹ️  Mērķa repozitorijs: $TARGET_CODENAME"
 
-# --- 2. NOTĪRA VECĀS VERSIJAS (Jau lietotājam bija neveiksmīgs mēģinājums) ---
+# --- 2. NOTĪRA VECĀS VERSIJAS (ja lietotājam bija neveiksmīgs mēģinājums) ---
 if [ -f /etc/apt/sources.list.d/eparaksts.list ]; then
     echo "🧹 Dzēš veco repozitorija konfigurāciju..."
     sudo rm /etc/apt/sources.list.d/eparaksts.list
@@ -34,7 +41,8 @@ fi
 
 # --- 3. LEJUPIELĀDES ATSLĒGA ---
 echo "🔑 Notiek drošības atslēgas lejupielāde..."
-wget -qO- https://www.eparaksts.lv/files/ep3updates/debian/public.key | \
+# Pievienots -q (quiet) un --show-progress, lai lietotājs redz, ka kaut kas notiek
+wget -q --show-progress -O- https://www.eparaksts.lv/files/ep3updates/debian/public.key | \
   gpg --dearmor | \
   sudo tee /usr/share/keyrings/eparaksts-keyring.gpg > /dev/null
 
