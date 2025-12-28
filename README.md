@@ -7,7 +7,7 @@
 
 > **Automatizēts risinājums eParaksta un eID programmatūras uzstādīšanai Linux vidē.**
 
-Šis skripts vienkāršo oficiālo LVRTC uzstādīšanas procesu, automātiski konfigurējot repozitorijus, GPG atslēgas un nepieciešamās pakotnes. Tas īpaši risina saderības problēmas lietotājiem ar **LMDE (Linux Mint Debian Edition)** un **Debian**, kur oficiālā instrukcija bieži nedarbojas.
+Šis skripts vienkāršo oficiālo LVRTC uzstādīšanas procesu, automātiski konfigurējot repozitorijus, GPG atslēgas un nepieciešamās pakotnes priekš Ubuntu, Linux Mint un Debian. Tas īpaši risina saderības problēmas lietotājiem ar **LMDE (Linux Mint Debian Edition)** un **Debian**, kur oficiālā instrukcija bieži nedarbojas.
 
 ---
 
@@ -18,7 +18,7 @@
 | **🕵️‍♂️ Automātiska OS noteikšana** | Skripts pats atpazīst sistēmu (Ubuntu, Linux Mint, LMDE, Kali, Debian Trixie u.c.) un pieslēdz atbilstošāko Ubuntu repozitoriju. |
 | **🛡️ Drošība un standarti** | Izmanto mūsdienīgu `signed-by` atslēgu pārvaldību (nevis novecojušo un nedrošo `apt-key`), garantējot, ka visi faili tiek verificēti pret oficiālajiem LVRTC serveriem. |
 | **🛠️ Debian 12 / LMDE 6 Labojums** | Automātiski izveido un uzinstalē "fiktīvu" (dummy) pakotni priekš `nautilus-sendto`, lai novērstu "unmet dependencies" kļūdu, kas bieži sastopama jaunākajās Debian versijās. |
-| **🧹 Tīra instalācija** | Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakas, lai nodrošinātu veiksmīgu rezultātu. |
+| **🧹 Tīra instalācija** | Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakotnes, lai nodrošinātu veiksmīgu rezultātu. |
 | **📦 Pilna komplektācija** | Vienā piegājienā uzstāda gan darbvirsmas lietotni, gan eID starpprogrammatūru (middleware), gan pārlūkprogrammu parakstīšanas moduli. |
 
 ## 🐧 Atbalstītās sistēmas
