@@ -2,7 +2,7 @@
 # =============================================================================
 # eParaksts uzstādīšanas skripts
 # Atbalsta: Ubuntu (jammy/noble/resolute), Linux Mint, LMDE, Debian, Kali
-# Versija: 2.2
+# Versija: 2.2 (curl | bash droša izpilde)
 # =============================================================================
 
 set -euo pipefail
@@ -20,7 +20,7 @@ die()     { error "$*"; exit 1; }
 section() { echo -e "\n${BOLD}══ $* ══${RESET}"; }
 
 # =============================================================================
-# CURL | BASH DROŠĪBA — main() 
+# CURL | BASH DROŠĪBA — main() iesaiņojums
 # Bash parsē visu skriptu pirms izpildes tikai tad, ja viss kods ir funkcijā.
 # Tas novērš daļējas izpildes risku, ja savienojums tiek pārtraukts lejupielādes
 # laikā (curl | bash truncation attack).
@@ -134,7 +134,7 @@ check_internet() {
     if curl -fsSL --max-time 10 --connect-timeout 8 \
             "https://1.1.1.1" -o /dev/null 2>/dev/null; then
         # Tīkls strādā, bet eparaksts.lv nav sasniedzams
-        die "Tīkls darbojas, bet eparaksts.lv nav sasniedzams. Iespējams servera pārtraukums — mēģiniet vēlāk."
+        die "Tīkls darbojas, bet eparaksts.lv nav sasniedzams. Iespējams servera pārtraukums — mēģini vēlāk."
     fi
 
     # Nekas nedarbojas — nav interneta
@@ -203,7 +203,7 @@ KEY_TMP=$(mktemp /tmp/eparaksts-key-XXXXXX.asc)
 
 # Zināmais eParaksts GPG atslēgas pirkstu nospiedums (verificēts no eparaksts.lv).
 # Ja mainās, jāatjauno šeit — tas ir apzināts drošības lēmums.
-EXPECTED_FINGERPRINT="8D38 5068 38D5 E7B0 93AC  2E05 4FB5 3DD4 98B7 5C23"
+EXPECTED_FINGERPRINT="4F82B419C9381C2CEE1E28F82892AFC4402D8CE0"
 
 log "Lejupielādē GPG atslēgu..."
 if ! curl -fsSL --max-time 30 --retry 3 --retry-delay 2 \
@@ -304,7 +304,7 @@ PACKAGES=(eparakstitajs3 awp latvia-eid-middleware eparaksts-token-signing)
 for pkg in "${PACKAGES[@]}"; do
     log "Instalē: $pkg"
     if ! sudo apt-get install -y "$pkg" 2>&1; then
-        warn "Pakotni '$pkg' neizdevās — mēģina labot..."
+        warn "Pakete '$pkg' neizdevās — mēģina labot..."
         sudo apt-get --fix-broken install -y -qq
         sudo apt-get install -y "$pkg" || warn "Neizdevās instalēt $pkg — turpina."
     fi
@@ -353,9 +353,9 @@ enable_and_start_pcscd() {
         sleep 2
         if kill -0 "$PCSCD_FALLBACK_PID" 2>/dev/null; then
             success "pcscd palaists manuāli (PID: $PCSCD_FALLBACK_PID)."
-            warn "Piezīme: šis pcscd process nav pārvaldīts ar systemd. Restartē sistēmu, lai aktivizētu pastāvīgo pakalpojumu."
+            warn "Piezīme: šis pcscd process nav pārvaldīts ar systemd. Restartējiet sistēmu, lai aktivizētu pastāvīgo pakalpojumu."
         else
-            error "pcscd neizdevās palaist. Pārbaudi: sudo journalctl -u pcscd"
+            error "pcscd neizdevās palaist. Pārbaudiet: sudo journalctl -u pcscd"
         fi
     fi
 }
@@ -383,7 +383,7 @@ fi
 # Pievieno lietotāju plugdev grupai
 if id -nG "$USER" | grep -qv plugdev; then
     sudo usermod -aG plugdev "$USER"
-    warn "Lietotājs '$USER' pievienots plugdev grupai. Izlogojies un pieraksties no jauna, lai izmaiņas varētu stāties spēkā."
+    warn "Lietotājs '$USER' pievienots plugdev grupai. Izlogojies un pieraksties no jauna, lai izmaiņas stātos spēkā."
 fi
 
 enable_and_start_pcscd
@@ -452,15 +452,15 @@ if [[ $FAIL -eq 0 ]]; then
 else
     echo -e "${YELLOW}${BOLD}"
     echo "  ╔══════════════════════════════════════════════════╗"
-    echo "  ║   Uzstādīts ar brīdinājumiem — skati žurnālu  ║"
+    echo "  ║   Uzstādīts ar brīdinājumiem — skatiet žurnālu  ║"
     echo "  ╚══════════════════════════════════════════════════╝"
     echo -e "${RESET}"
 fi
 
 echo -e "${BOLD}Nākamie soļi:${RESET}"
-echo "  1. Pievieno paplašinājumu pārlūkam: Chrome / Edge / Brave / Vivaldi/ Firefox"
+echo "  1. Pievieno paplašinājumu pārlūkam: Chrome / Edge / Firefox"
 echo "     https://www.eparaksts.lv/lv/lejupielade"
-echo "  2. Pievieno viedkartes lasītāju un ievieto karti"
+echo "  2. Pievienojiet viedkartes lasītāju un ievietojiet karti"
 echo "  3. Ja tikko pievienots plugdev — izlogojies un pieraksties no jauna"
 echo ""
 echo "  Žurnāla fails: $LOGFILE"
