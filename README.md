@@ -1,78 +1,78 @@
-# ✍️ eParakstītājs 3.0 uzstādītājs
+# eParaksts — automātiskā uzstādīšana
 
-![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
-![Ubuntu](https://img.shields.io/badge/Ubuntu-E95420?style=for-the-badge&logo=ubuntu&logoColor=white)
-![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)
-![Bash](https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white)
+Automātiska eParaksts Mobile uzstādīšana un noņemšana Debian bāzes sistēmām.
 
-> **Automatizēts risinājums eParaksta un eID programmatūras uzstādīšanai Linux vidē.**
-
-Šis skripts vienkāršo oficiālo LVRTC uzstādīšanas procesu, automātiski konfigurējot repozitorijus, GPG atslēgas un nepieciešamās pakotnes priekš Ubuntu, Linux Mint un Debian. Tas īpaši risina saderības problēmas lietotājiem ar **LMDE (Linux Mint Debian Edition)** un **Debian**, kur oficiālā instrukcija bieži nedarbojas.
-
----
-
-## ✨ Iespējas
-
-| Funkcija | Apraksts |
-| :--- | :--- |
-| **🕵️‍♂️ Automātiska OS noteikšana** | Skripts pats atpazīst sistēmu (Ubuntu, Linux Mint, LMDE, Kali, Debian Trixie u.c.) un pieslēdz atbilstošāko Ubuntu repozitoriju. |
-| **🛡️ Drošība un standarti** | Izmanto mūsdienīgu `signed-by` atslēgu pārvaldību (nevis novecojušo un nedrošo `apt-key`), garantējot, ka visi faili tiek verificēti pret oficiālajiem LVRTC serveriem. |
-| **🛠️ Debian 12 / LMDE 6 Labojums** | Automātiski izveido un uzinstalē "fiktīvu" (dummy) pakotni priekš `nautilus-sendto`, lai novērstu "unmet dependencies" kļūdu, kas bieži sastopama jaunākajās Debian versijās. |
-| **🧹 Tīra instalācija** | Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakotnes, lai nodrošinātu veiksmīgu rezultātu. |
-| **📦 Pilna komplektācija** | Vienā piegājienā uzstāda gan darbvirsmas lietotni, gan eID starpprogrammatūru (middleware), gan pārlūkprogrammu parakstīšanas moduli. |
-
-## 🐧 Atbalstītās sistēmas
-
-Skripts ir testēts un apstiprināts darbībai uz šādām distribūcijām:
-
-* ✅ **Ubuntu:** 22.04 LTS (Jammy), 24.04 LTS (Noble)
-* ✅ **Linux Mint:** 21.x, 22.x
-* ✅ **LMDE:** 6 (Faye), 7 (Gigi)
-* ✅ **Debian:** 12 (Bookworm)
-
----
-
-## 🚀 Kā uzstādīt?
-
-### ⚡ Ātrā uzstādīšana
-Vienkārši atver termināli (`Ctrl+Alt+T`) un iekopē šo komandu un nospied ENTER:
+## Uzstādīšana
 
 ```bash
 curl -fsSL https://klavsy.github.io/ep/install.sh | bash
+```
 
-Lai noņemtu programmau izpildi komandu terminālī:
+## Noņemšana
 
+```bash
 curl -fsSL https://klavsy.github.io/ep/uninstall.sh | bash
 ```
 
-## 📦 Kas tiek uzstādīts?
+---
 
-Skripts uzstāda pilnu LVRTC programmatūras komplektu:
+## Atbalstītās sistēmas
 
-* **`eparakstitajs3`** – Galvenā darbvirsmas lietotne dokumentu parakstīšanai.
-* **`latvia-eid-middleware`** – Starpprogrammatūra eID kartes lasīšanai.
-* **`eparaksts-token-signing`** – Spraudnis parakstīšanai pārlūkprogrammās.
-* **`awp`** – Papildu draiveri vecākām viedkartēm.
+| Sistēma | Versija |
+|---|---|
+| Ubuntu | 22.04 (jammy), 24.04 (noble), 26.04 (resolute) |
+| Linux Mint | 21.x, 22.x (MATE / Cinnamon / Xfce) |
+| Linux Mint Debian Edition (LMDE) | 5, 6 |
+| Debian | 12 (bookworm), 13 (trixie) |
+| Kali Linux | rolling |
 
 ---
 
-## ⚠️ Atruna / Disclaimer
+## Iespējas
 
-**LV:**
-> Šis ir **neoficiāls** instalācijas skripts. Es neesmu saistīts ar šīs programmatūras izstrādātājiem, un viņi nav šo skriptu apstiprinājuši. Šis repozitorijs piedāvā skriptu, lai automatizētu instalācijas procesu Linux sistēmās.
+**Automātiska OS noteikšana**
+Skripts pats atpazīst sistēmu (Ubuntu, Linux Mint, LMDE, Kali, Debian u.c.) un pieslēdz atbilstošāko repozitoriju — nekādas manuālas konfigurācijas nav nepieciešamas.
 
-**EN:**
-> This is an **unofficial** installation script. I am not affiliated with, endorsed by, or connected to the developers of this software. This repository simply provides a script to automate the installation process on Linux systems.
+**Drošība un standarti**
+Izmanto mūsdienīgu `signed-by` atslēgu pārvaldību (nevis novecojušo `apt-key`) un verificē GPG atslēgas pirkstu nospiedumu pret zināmu vērtību — neatbilstība aptur instalāciju.
 
-### 🏢 Software Owner / Programmatūras īpašnieks
+**Debian 12 / LMDE 6 labojums**
+Automātiski izveido un uzinstalē fiktīvu (dummy) pakotni `nautilus-sendto`, lai novērstu "unmet dependencies" kļūdu, kas bieži parādās jaunākajās Debian versijās.
 
-All rights regarding the software belong to / Visas tiesības uz programmatūru pieder:
+**Tīra instalācija**
+Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakotnes, lai nodrošinātu veiksmīgu rezultātu.
 
-**Valsts akciju sabiedrība “Latvijas Valsts radio un televīzijas centrs” (LVRTC)**
-
-* **Reg. Nr:** 40003011203
-* **Address / Adrese:** Zemitāna iela 9 k-3, Rīga, Latvija, LV-1012
-* **Website / Vietne:** [eparaksts.lv](https://www.eparaksts.lv)
+**Pilna komplektācija**
+Vienā piegājienā uzstāda darbvirsmas lietotni, eID starpprogrammatūru (middleware), pcscd viedkartes pakalpojumu un pārlūkprogrammu parakstīšanas moduli.
 
 ---
-*Izveidots ar ❤️ Linux kopienai Latvijā.*
+
+## Drošības īpašības
+
+- `main()` iesaiņojums — bash parsē visu skriptu pirms jebkādas izpildes; novērš daļējas izpildes risku ja savienojums tiek pārtraukts
+- GPG pirkstu nospieduma verifikācija — neatbilstība aptur instalāciju
+- Whitelist arhitektūra (atinstalētājā) — tiek dzēsti tikai precīzi norādīti faili
+- Symlink aizsardzība — noraida symlink mērķus pirms dzēšanas
+- Nav `source /etc/os-release` — parsēts droši ar `grep`/`sed`
+- Nav `sudo -E` — lietotāja vide netiek nodota root kontekstam
+- Nav `--force-all` — paketes tiek noņemtas ar `apt-get purge`
+- `mktemp` visiem pagaidu failiem — atomiski, `0600`
+- `set -euo pipefail` + `IFS` — pilna kļūdu apstrāde
+
+---
+
+## Ja nevēlies izmantot curl | bash
+
+Droša alternatīva — lejupielādē, pārskati kodu, tad palaid:
+
+```bash
+# Uzstādīšana
+curl -fsSL https://klavsy.github.io/ep/install.sh -o install.sh
+less install.sh
+bash install.sh
+
+# Noņemšana
+curl -fsSL https://klavsy.github.io/ep/uninstall.sh -o uninstall.sh
+less uninstall.sh
+bash uninstall.sh
+```
