@@ -19,7 +19,20 @@
 | **🛡️ Drošība un standarti** | Izmanto mūsdienīgu `signed-by` atslēgu pārvaldību (nevis novecojušo un nedrošo `apt-key`), garantējot, ka visi faili tiek verificēti pret oficiālajiem LVRTC serveriem. |
 | **🛠️ Debian 12 / LMDE 6 Labojums** | Automātiski izveido un uzinstalē "fiktīvu" (dummy) pakotni priekš `nautilus-sendto`, lai novērstu "unmet dependencies" kļūdu, kas bieži sastopama jaunākajās Debian versijās. |
 | **🧹 Tīra instalācija** | Pirms sākšanas iztīra iepriekšējos neveiksmīgos instalācijas mēģinājumus un bojātās pakotnes, lai nodrošinātu veiksmīgu rezultātu. |
-| **📦 Pilna komplektācija** | Vienā piegājienā uzstāda gan darbvirsmas lietotni, gan eID starpprogrammatūru (middleware), gan pārlūkprogrammu parakstīšanas moduli. |
+| **📦 Pilna komplektācija** | Vienā piegājienā uzstāda gan darbvirsmas lietotni, gan eID starpprogrammatūru (middleware), gan pārlūkprogrammu parakstīšanas moduli. 
+Drošības īpašības
+
+main() iesaiņojums — bash parsē visu skriptu pirms jebkādas izpildes; novērš daļējas izpildes risku ja savienojums tiek pārtraukts
+GPG pirkstu nospieduma verifikācija — atslēga tiek pārbaudīta pret zināmu hash; neatbilstība aptur instalāciju
+Whitelist arhitektūra (atinstalētājā) — tiek dzēsti tikai precīzi norādīti faili
+Symlink aizsardzība — noraida symlink mērķus pirms dzēšanas
+Nav source — /etc/os-release tiek parsēts droši ar grep/sed
+Nav sudo -E — lietotāja vide netiek nodota root kontekstam
+Nav --force-all — paketes tiek noņemtas ar apt-get purge
+mktemp — visi pagaidu faili tiek veidoti atomiski ar 0600
+set -euo pipefail + IFS — pilna kļūdu apstrāde
+
+|
 
 ## 🐧 Atbalstītās sistēmas
 
