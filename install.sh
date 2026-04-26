@@ -2,7 +2,7 @@
 # =============================================================================
 # eParaksts uzstādīšanas skripts
 # Atbalsta: Ubuntu (jammy/noble/resolute), Linux Mint, LMDE, Debian, Kali
-# Versija: 2.1 (drošības labojumi)
+# Versija: 2.2
 # =============================================================================
 
 set -euo pipefail
@@ -19,9 +19,17 @@ error()   { echo -e "${RED}[✘]${RESET} $*" >&2; }
 die()     { error "$*"; exit 1; }
 section() { echo -e "\n${BOLD}══ $* ══${RESET}"; }
 
+# =============================================================================
+# CURL | BASH DROŠĪBA — main() 
+# Bash parsē visu skriptu pirms izpildes tikai tad, ja viss kods ir funkcijā.
+# Tas novērš daļējas izpildes risku, ja savienojums tiek pārtraukts lejupielādes
+# laikā (curl | bash truncation attack).
+# =============================================================================
+main() {
+
 # --- Drošība: tikai root ar sudo, nevis tiešais root -------------------------
 if [[ $EUID -eq 0 && -z "${SUDO_USER:-}" ]]; then
-    die "Palaist kā root tiešā veidā nav atļauts. Izmanto: sudo bash $0"
+    die "Palaist kā root tiešā veidā nav atļauts.\n  Palaid kā parasts lietotājs: curl -fsSL https://klavsy.github.io/ep/install.sh | bash"
 fi
 if ! sudo -n true 2>/dev/null; then
     warn "Skripts pieprasa sudo tiesības."
@@ -106,10 +114,31 @@ check_arch() {
 
 check_internet() {
     log "Pārbauda interneta savienojumu..."
-    if ! curl -fsSL --max-time 10 --head "https://www.eparaksts.lv" >/dev/null 2>&1; then
-        die "Nav interneta savienojuma ar eparaksts.lv. Pārbaudiet tīklu."
+
+    # 1. mēģinājums: HEAD pieprasījums (ātrs, bet dažiem serveriem bloķēts)
+    if curl -fsSL --max-time 10 --head "https://www.eparaksts.lv" \
+            -o /dev/null 2>/dev/null; then
+        success "Interneta savienojums ✔"
+        return 0
     fi
-    success "Interneta savienojums ✔"
+
+    # 2. mēģinājums: GET uz zināmu mazu failu (ja HEAD tiek bloķēts)
+    if curl -fsSL --max-time 15 --range 0-0 \
+            "https://www.eparaksts.lv/files/ep3updates/debian/eparaksts-apt-public.asc" \
+            -o /dev/null 2>/dev/null; then
+        success "Interneta savienojums ✔ (GET fallback)"
+        return 0
+    fi
+
+    # 3. mēģinājums: tīkla pārbaude pret 1.1.1.1 (Cloudflare DNS)
+    if curl -fsSL --max-time 10 --connect-timeout 8 \
+            "https://1.1.1.1" -o /dev/null 2>/dev/null; then
+        # Tīkls strādā, bet eparaksts.lv nav sasniedzams
+        die "Tīkls darbojas, bet eparaksts.lv nav sasniedzams. Iespējams servera pārtraukums — mēģiniet vēlāk."
+    fi
+
+    # Nekas nedarbojas — nav interneta
+    die "Nav interneta savienojuma. Pārbaudiet tīkla iestatījumus."
 }
 
 check_disk_space() {
@@ -275,7 +304,7 @@ PACKAGES=(eparakstitajs3 awp latvia-eid-middleware eparaksts-token-signing)
 for pkg in "${PACKAGES[@]}"; do
     log "Instalē: $pkg"
     if ! sudo apt-get install -y "$pkg" 2>&1; then
-        warn "Pakete '$pkg' neizdevās — mēģina labot..."
+        warn "Pakotni '$pkg' neizdevās — mēģina labot..."
         sudo apt-get --fix-broken install -y -qq
         sudo apt-get install -y "$pkg" || warn "Neizdevās instalēt $pkg — turpina."
     fi
@@ -303,7 +332,7 @@ enable_and_start_pcscd() {
 
     # Zaķu caurums: dažās sistēmās socket aktivizācija ir vēlamā metode
     if systemctl is-active --quiet pcscd.socket; then
-        log "pcscd.socket jau aktīvs — palaiž arī pcscd.service..."
+        log "pcscd.socket jau aktīvs — palaiz arī pcscd.service..."
     fi
 
     sudo systemctl stop pcscd.service pcscd.socket 2>/dev/null || true
@@ -354,7 +383,7 @@ fi
 # Pievieno lietotāju plugdev grupai
 if id -nG "$USER" | grep -qv plugdev; then
     sudo usermod -aG plugdev "$USER"
-    warn "Lietotājs '$USER' pievienots plugdev grupai. Izlogojies un ienāc no jauna, lai izmaiņas stātos spēkā."
+    warn "Lietotājs '$USER' pievienots plugdev grupai. Izlogojies un pieraksties no jauna, lai izmaiņas varētu stāties spēkā."
 fi
 
 enable_and_start_pcscd
@@ -423,18 +452,25 @@ if [[ $FAIL -eq 0 ]]; then
 else
     echo -e "${YELLOW}${BOLD}"
     echo "  ╔══════════════════════════════════════════════════╗"
-    echo "  ║   Uzstādīts ar brīdinājumiem — skatiet žurnālu  ║"
+    echo "  ║   Uzstādīts ar brīdinājumiem — skati žurnālu  ║"
     echo "  ╚══════════════════════════════════════════════════╝"
     echo -e "${RESET}"
 fi
 
 echo -e "${BOLD}Nākamie soļi:${RESET}"
-echo "  1. Pievieno paplašinājumu pārlūkam: Chrome / Edge / Firefox"
+echo "  1. Pievieno paplašinājumu pārlūkam: Chrome / Edge / Brave / Vivaldi/ Firefox"
 echo "     https://www.eparaksts.lv/lv/lejupielade"
-echo "  2. Pievienojiet viedkartes lasītāju un ievietojiet karti"
-echo "  3. Ja tikko pievienots plugdev — izlogojies un ienāc no jauna"
+echo "  2. Pievieno viedkartes lasītāju un ievieto karti"
+echo "  3. Ja tikko pievienots plugdev — izlogojies un pieraksties no jauna"
 echo ""
 echo "  Žurnāla fails: $LOGFILE"
-echo "  Palaid ar: sudo bash install-eparaksts.sh"
+echo "  Uzstādīšana:  curl -fsSL https://klavsy.github.io/ep/install.sh | bash"
+echo "  Vai lokāli:   sudo bash install-eparaksts.sh"
 
 exit $FAIL
+
+} # end main()
+
+# Izsauc main tikai pēc tam, kad bash ir parsējis visu skriptu.
+# Šī ir vienīgā izpildes ieejas vieta.
+main "$@"
