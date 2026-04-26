@@ -39,6 +39,10 @@ Vienkārši atver termināli (`Ctrl+Alt+T`) un iekopē šo komandu un nospied EN
 
 ```bash
 curl -fsSL https://klavsy.github.io/ep/install.sh | bash
+
+Lai noņemtu programmau izpildi komandu terminālī:
+
+curl -fsSL https://klavsy.github.io/ep/uninstall.sh | bash
 ```
 
 ## 📦 Kas tiek uzstādīts?
