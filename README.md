@@ -1,4 +1,4 @@
-# eParaksts — automātiskā uzstādīšana
+# eParaksts - automātiskā uzstādīšana
 
 Automātiska eParaksts Mobile uzstādīšana un noņemšana Debian bāzes sistēmām.
 
